@@ -51,6 +51,6 @@ for zfs_share in args.zfs_shares:
             elif (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
                 destroy_snapshot(snapshot)
     elif args.action == 'create':
-        create_snapshot("%(zfs_share)s@%(timestamp)s")
+        create_snapshot("%s@%s" % (zfs_share, timestamp))
     else:
         print "Action not supported"
