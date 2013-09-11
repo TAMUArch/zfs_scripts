@@ -30,7 +30,8 @@ def destroy_snapshot(zfs_snapshot):
     commands.getoutput("zfs destroy %s" % (zfs_snapshot))
 
 def current_snapshots(zfs_share):
-    snaps =  commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %(zfs_share)s")
+    snaps =  commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %s" % (zfs_share))
+    print snaps
     return snaps.split("\n")
 
 parser = argparse.ArgumentParser(description='ZFS Snapshotting Wrapper')
@@ -48,7 +49,8 @@ for zfs_share in args.zfs_shares:
         for snapshot in current_snapshots(zfs_share):
             if snapshot == None or snapshot == '':
                 break
-            elif (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
+	    snapshot_date = datetime.datetime.strptime(snapshot.split("@")[1], "%Y%m%d-%H%M") 
+            if (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
                 destroy_snapshot(snapshot)
     elif args.action == 'create':
         create_snapshot("%s@%s" % (zfs_share, timestamp))
