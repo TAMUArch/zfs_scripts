@@ -19,6 +19,7 @@ import subprocess
 import time
 import os
 import argparse
+import datetime
 
 def create_snapshot(zfs_snapshot):
     print "Snapshotting -> %s" % (zfs_share)
@@ -29,7 +30,7 @@ def destroy_snapshot(zfs_snapshot):
     commands.getoutput("zfs destroy %s" % (snapshot_name))
 
 def current_snapshots(zfs_share):
-    snaps =  commands.geetoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %(zfs_share)s")
+    snaps =  commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %(zfs_share)s")
     return snaps.split("\n")
 
 parser = argparse.ArgumentParser(description='ZFS Snapshotting Wrapper')
@@ -45,7 +46,7 @@ timestamp = time.strftime("%Y%m%d-%H%M")
 for zfs_share in args.zfs_shares:
     if args.action == 'destroy':
         for snapshot in current_snapshots(zfs_share):
-            snapshot_date = datetime.datetime.strptime(snapshot.slit("@")[1], "%Y%m%d-%H%M")
+            snapshot_date = datetime.datetime.strptime(snapshot.split("@")[1], "%Y%m%d-%H%M")
             if (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
                 destroy_snapshot(snapshot)
     elif args.action == 'create':
