@@ -1,4 +1,18 @@
 #!/usr/local/bin/python
+# Help:
+# Simple script to handle bulk creation and deletion of zfs snapshots
+#
+# Creation:
+# creates snapshots in the following format rpool0/root@20130910-1130
+#     python py_snapshot.py rpool0/root
+#
+# Deletion:
+# This only works for snapshots that were created with this script or snapshots with the correct
+# naming convention.
+#
+# deletes all snapshots older than 90 days for rpool0/root and tank/important_files:
+#     python py_snapshot.py --action destroy --time-to-keep 90 rpool0/root tank/important_files
+
 
 import commands
 import subprocess
@@ -14,9 +28,9 @@ def destroy_snapshot(zfs_snapshot):
     print "Removing snapshot -> %s" % zfs_share
     commands.getoutput("zfs destroy %s" % (snapshot_name))
 
-def current_snapshots():
-  snaps =  commands.geetoutput("zfs list -H -t snapshot | awk '{print $1}'")
-  return snaps.split("\n")
+def current_snapshots(zfs_share):
+    snaps =  commands.geetoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %(zfs_share)s")
+    return snaps.split("\n")
 
 parser = argparse.ArgumentParser(description='ZFS Snapshotting Wrapper')
 parser.add_argument('--action', type=str, default='create',
@@ -30,11 +44,11 @@ timestamp = time.strftime("%Y%m%d-%H%M")
 
 for zfs_share in args.zfs_shares:
     if args.action == 'destroy':
-      for snapshot in current_snapshots():
-        snapshot_date = datetime.datetime.strptime(snapshot.slit("@")[1], "%Y%m%d-%H%M")
-        if (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
-          destroy_snapshot(snapshot)
+        for snapshot in current_snapshots(zfs_share):
+            snapshot_date = datetime.datetime.strptime(snapshot.slit("@")[1], "%Y%m%d-%H%M")
+            if (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
+                destroy_snapshot(snapshot)
     elif args.action == 'create':
-      create_snapshot("%(zfs_share)s@%(timestamp)s")
+        create_snapshot("%(zfs_share)s@%(timestamp)s")
     else:
-      print "Action not supported"
+        print "Action not supported"
