@@ -46,7 +46,7 @@ timestamp = time.strftime("%Y%m%d-%H%M")
 for zfs_share in args.zfs_shares:
     if args.action == 'destroy':
         for snapshot in current_snapshots(zfs_share):
-            if snapshot == None:
+            if snapshot == None or snapshot == '':
                 break
             elif (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
                 destroy_snapshot(snapshot)
