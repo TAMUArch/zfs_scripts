@@ -23,11 +23,11 @@ import datetime
 
 def create_snapshot(zfs_snapshot):
     print "Snapshotting -> %s" % (zfs_share)
-    commands.getoutput("zfs snapshot %s" % (snapshot_name))
+    commands.getoutput("zfs snapshot %s" % (zfs_snapshot))
 
 def destroy_snapshot(zfs_snapshot):
-    print "Removing snapshot -> %s" % zfs_share
-    commands.getoutput("zfs destroy %s" % (snapshot_name))
+    print "Removing snapshot -> %s" % (zfs_snapshot)
+    commands.getoutput("zfs destroy %s" % (zfs_snapshot))
 
 def current_snapshots(zfs_share):
     snaps =  commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %(zfs_share)s")
