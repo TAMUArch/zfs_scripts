@@ -47,8 +47,8 @@ for zfs_share in args.zfs_shares:
     if args.action == 'destroy':
         for snapshot in current_snapshots(zfs_share):
             if snapshot == None:
-              break
-            if (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
+                break
+            elif (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
                 destroy_snapshot(snapshot)
     elif args.action == 'create':
         create_snapshot("%(zfs_share)s@%(timestamp)s")
