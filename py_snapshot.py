@@ -31,16 +31,16 @@ def destroy_snapshot(snapshot_name):
     commands.getoutput("zfs destroy %s" % (snapshot_name))
     logging.info('Removed Snapshot -> %s', snapshot_name)
 def current_snapshots(zfs_share):
-    snaps = commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %(zfs_share)s")
+    snaps = commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %s" % (zfs_share))
     return snaps.split("\n")
 
 parser = argparse.ArgumentParser(description='ZFS Snapshotting Wrapper')
 parser.add_argument('--action', type=str, default='create',
-    help='remove or create defaults to %(default)s')
+                    help='remove or create defaults to %(default)s')
 parser.add_argument('--time-to-keep', metavar='DAYS', type=int, default=30,
-    help='delete snapshots after these many days default: %(default)s')
+                    help='delete snapshots after these many days default: %(default)s')
 parser.add_argument('zfs_shares', type=str, nargs='+',
-    help='a list of zfs shares eg. pool0/test pool0/test1')
+                    help='a list of zfs shares eg. pool0/test pool0/test1')
 args = parser.parse_args()
 
 timestamp = time.strftime("%Y%m%d-%H%M")
@@ -50,11 +50,12 @@ logging.basicConfig(filename='/var/log/zfs_snapshots.log', level=logging.INFO)
 for zfs_share in args.zfs_shares:
     if args.action == 'destroy':
         for snapshot in current_snapshots(zfs_share):
+            if snapshot == None or snapshot == '':
+                break
             snapshot_date = datetime.datetime.strptime(snapshot.split("@")[1], "%Y%m%d-%H%M")
             if (datetime.datetime.now() - snapshot_date) >= datetime.timedelta(days = args.time_to_keep):
                 destroy_snapshot(snapshot)
-            elif args.action == 'create':
-                snapshot_name = ("%s@%s" % (zfs_share, timestamp))
-                create_snapshot(snapshot_name)
-            else:
-                print "Action not supported"
+    elif args.action == 'create':
+        create_snapshot("%s@%s" % (zfs_share, timestamp))
+    else:
+        print "Action not supported"
