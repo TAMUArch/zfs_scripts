@@ -20,16 +20,15 @@ import time
 import os
 import argparse
 import datetime
-import logging
 
 def create_snapshot(snapshot_name):
     print "Snapshotting -> %s" % (zfs_share)
     commands.getoutput("zfs snapshot %s" % (snapshot_name))
-    logging.info('Created Snapshot -> %s', snapshot_name)
+
 def destroy_snapshot(snapshot_name):
     print "Removing snapshot -> %s" % (zfs_share)
     commands.getoutput("zfs destroy %s" % (snapshot_name))
-    logging.info('Removed Snapshot -> %s', snapshot_name)
+
 def current_snapshots(zfs_share):
     snaps = commands.getoutput("zfs list -H -t snapshot | awk '{print $1}' | grep %s" % (zfs_share))
     return snaps.split("\n")
@@ -39,14 +38,13 @@ parser.add_argument('--action', type=str, default='create',
                     help='remove or create defaults to %(default)s')
 parser.add_argument('--time-to-keep', metavar='DAYS', type=int, default=30,
                     help='delete snapshots after these many days default: %(default)s')
+parser.add_argument('--style', type=str, default='timestamp',
+                    help='snapshot style to use defaults to %(default)s')
 parser.add_argument('zfs_shares', type=str, nargs='+',
                     help='a list of zfs shares eg. pool0/test pool0/test1')
 args = parser.parse_args()
 
 timestamp = time.strftime("%Y%m%d-%H%M")
-
-logging.basicConfig(filename='/var/log/zfs_snapshots.log', level=logging.INFO)
-
 for zfs_share in args.zfs_shares:
     if args.action == 'destroy':
         for snapshot in current_snapshots(zfs_share):
