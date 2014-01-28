@@ -62,13 +62,13 @@ def strip_time_stamp(stamp_type, snapshot):
     return datetime.datetime.strptime(snapshot.split("@")[1], time_format)
 
 
-parser = argparse.ArgumentParser(description='ZFS Snapshotting Wrapper')
+parser = argparse.ArgumentParser(description='ZFS bulk snapshot tool')
 parser.add_argument('--action', type=str, default='create',
                     help='remove or create defaults to %(default)s')
 parser.add_argument('--time-to-keep', type=int, default=30,
-                    help='delete snapshots after these many days default: %(default)s')
+                    help='delete snapshots after these many days defaults to %(default)s')
 parser.add_argument('--by-time', type=str, default='hourly',
-                    help='snapshot using hourly, daily, or weekly')
+                    help='snapshot using hourly, daily, or weekly defaults to %(default)s')
 parser.add_argument('zfs_shares', type=str, nargs='+',
                     help='a list of zfs shares eg. pool0/test pool0/test1')
 args = parser.parse_args()
