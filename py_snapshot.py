@@ -67,8 +67,6 @@ parser.add_argument('--action', type=str, default='create',
                     help='remove or create defaults to %(default)s')
 parser.add_argument('--time-to-keep', type=int, default=30,
                     help='delete snapshots after these many days default: %(default)s')
-parser.add_argument('--style', type=str, default='timestamp',
-                    help='snapshot style to use defaults to %(default)s')
 parser.add_argument('--by-time', type=str, default='hourly',
                     help='snapshot using hourly, daily, or weekly')
 parser.add_argument('zfs_shares', type=str, nargs='+',
