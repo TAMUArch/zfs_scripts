@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 # Help:
 # Simple script to handle bulk creation and deletion of zfs snapshots
 #
