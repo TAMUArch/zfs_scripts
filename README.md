@@ -3,7 +3,7 @@ zfs_scripts
 
 Random scripts we use to help manage ZFS on Omnios.
 
-py_snapshot.py
+py-snapshot.py
 --------------
 
 Makes creation and deletion of multiple snapshots simple, by default it
